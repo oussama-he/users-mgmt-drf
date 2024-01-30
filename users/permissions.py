@@ -1,9 +1,16 @@
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_access_policy import AccessPolicy
 
 
-class IsAuthenticatedForManipulation(BasePermission):
-
-    def has_permission(self, request, view):
-        if request.method in SAFE_METHODS:
-            return True
-        return bool(request.user and request.user.is_authenticated)
+class UserAccessPolicy(AccessPolicy):
+    statements = [
+        {
+            'action': ['<safe_methods>'],
+            'principal': '*',
+            'effect': 'allow',
+        },
+        {
+            'action': ['create', 'destroy', 'partial_update', 'update'],
+            'principal': ['authenticated'],
+            'effect': 'allow',
+        }
+    ]
